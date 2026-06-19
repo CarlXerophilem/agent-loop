@@ -1,0 +1,38 @@
+# GOAL
+
+> Seeded by the operator at **launch only** (refinement #1). The launch-time
+> classifier reads this file to pick ONE mode (see `mode_hint` below).
+> After launch the loop runs autonomously; correct by editing this file and
+> **relaunching from `state/HANDOFF.md`**, never by mid-run prompts.
+
+## Statement
+
+<!-- ONE line. Engineering: a concrete objective the backlog decomposes into.
+     Generative: a terse hard statement (a conjecture / open problem). -->
+Make the half-iterate solver return exact rational coefficients for every non-parabolic fixed point and cover it with tests.
+
+## mode_hint
+
+<!-- engineering | generative | auto
+     engineering  → flat TODO backlog + rubric tiers (plan §5)
+     generative   → semi-connected knowledge field, positions hard nodes by
+                    geometry, NEVER "unsolved" (plan §7 IRON RULE)
+     auto         → let config/mode.json's classifier decide from the Statement -->
+engineering
+
+## Success criteria
+
+<!-- Bullet, checkable. Engineering: tests/lint pass, feature observable.
+     Generative: a geometry deliverable (nearest verified landmarks, gap shape,
+     promising bridges, small-case evidence) — never a "solved/unsolved" verdict. -->
+- `solveSchroederHalfIterate` returns exact `Rational` coefficients for hyperbolic fixed points (no float drift in the symbolic path).
+- New unit tests cover at least 3 worked examples and pass under `npm run lint`.
+- `HANDOFF.md` is truthful: completion is gated on the tests, not self-report (plan R2).
+
+## Constraints
+
+<!-- Hard boundaries the harness must respect. -->
+- No new runtime dependencies; match the vanilla-JS style in `js/engine.js`.
+- Keep exact BigInt arithmetic in coefficient paths — never introduce floating point.
+- Workers edit only inside their own worktree; never force-push shared branches.
+- Stay within `config/budget.json` wall-clock targets (proxy governance, plan §9).

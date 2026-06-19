@@ -1,0 +1,30 @@
+{
+  "_comment": "One node + one edge from the semi-connected knowledge field state/field.json. Generative mode only. Mirrors the plan §7.2 schema EXACTLY. IRON RULE: there is NO status field of unsolved/impossible/failed — the `location` geometry IS the status. The far end of the ladder is the gap_geometry/frontier_distance, a positional descriptor, never a defeat (plan §7 IRON RULE). Example domain: existence of a real-analytic functional square root of f(x)=x^2+c near a fixed point.",
+  "node": {
+    "id": "lemma.schroeder-conjugacy-hyperbolic",
+    "kind": "lemma",
+    "statement": "Near a hyperbolic fixed point p with multiplier m (|m| != 0,1), f is locally analytically conjugate to z -> m*z (Schroeder), so a half-iterate g with g(g)=f is given locally by the branch m^{1/2} in Schroeder coordinates.",
+    "location": {
+      "cluster": "local-analytic-linearization",
+      "nearest_landmarks": [
+        { "id": "landmark.koenigs-linearization-theorem", "hops": 1, "relation": "specializes", "semantic_dist": 0.18 },
+        { "id": "landmark.composita-half-iterate-formal", "hops": 2, "relation": "analogous", "semantic_dist": 0.41 }
+      ],
+      "frontier_distance": 1,
+      "gap_geometry": "one missing lemma",
+      "coords": [0.62, -0.13, 0.27, 0.08]
+    },
+    "verification": {
+      "checked_cases": ["f(x)=x^2 at p=0, m=0 excluded", "f(x)=2x+x^2 at p=0, m=2", "f(x)=(1/3)x+x^2 at p=0, m=1/3"],
+      "cross_model_verdict": "agree",
+      "baseline_anchored": true
+    },
+    "leverage": 4
+  },
+  "edge": {
+    "from": "landmark.koenigs-linearization-theorem",
+    "to": "lemma.schroeder-conjugacy-hyperbolic",
+    "rel": "implies",
+    "weight": 0.82
+  }
+}

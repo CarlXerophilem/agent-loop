@@ -1,0 +1,5 @@
+*.local.*
+.DS_Store
+state/worktrees/
+README.md
+readme.md

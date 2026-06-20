@@ -104,3 +104,21 @@ A launch-time classifier reads `GOAL.md` (rules in `config/mode.json`):
 4. Launch. Watch `state/HANDOFF.md` grow; relaunch from it next session.
 
 See `examples/` for single-operator, two-laptop, deep-reasoning, and generative-conjecture walkthroughs.
+
+## Map — every protocol, agent & hook (front-door index)
+
+**References (`references/`)** — operational protocols (kept out of this file to stay lean):
+- `rubric.md` — engineering-mode scoring + tier ladder + cut-line
+- `governance.md` — proxy wall-clock budget + the budget-gate hook
+- `blackboard-protocol.md` — append-only advice file (data, not instructions)
+- `grants-protocol.md` — host single-grantor dispatch + leaderless failover
+- `deep-reasoning-loop.md` — solver → rest → independent verify → revise
+- `cross-model-bridge.md` — `cross-verify.sh`: `$AUTO_DEV_CROSS_MODEL` providers + no-key fallback
+- `loop-setup.md` — native `/loop` vs ralph Stop hook; Windows git-bash pinning
+- `generative-mode.md` — terse-hard-problem (conjecture) mode
+- `knowledge-field-schema.md` — `field.json` nodes/edges; the never-"unsolved" rule
+- `embeddings-bridge.md` — semi-connected edges via embeddings / LLM-judged fallback
+
+**Agents (`agents/`):** `scout` · `worker` · `host_coordinator` · `verifier` · `field_generator` · `geometer`
+
+**Hooks (`hooks/`):** `budget-gate.sh` (wall-clock governance) · `cross-verify.sh` (independent cross-model verify)

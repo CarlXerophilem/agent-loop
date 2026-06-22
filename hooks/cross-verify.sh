@@ -15,13 +15,17 @@ PROMPT="${1:-}"
 [ -z "${PROMPT}" ] && PROMPT="$(cat 2>/dev/null || true)"
 [ -z "${PROMPT}" ] && { echo "CROSS_MODEL_AVAILABLE=none (empty prompt)"; exit 2; }
 MODEL="${AUTO_DEV_CROSS_MODEL:-}"
+# Resolve a Python 3 interpreter under any common name (python3 on *nix; python/py on
+# Windows). Without this, a box that ships `python` but not `python3` silently degrades
+# extract() to raw JSON. node / cat remain the last-resort fallbacks.
+PY="$(command -v python3 || command -v python || command -v py || true)"
 
 json_escape() { # JSON-encode stdin as a string literal
-  python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))' 2>/dev/null \
+  "${PY:-python3}" -c 'import json,sys; print(json.dumps(sys.stdin.read()))' 2>/dev/null \
     || node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.stringify(s)))'
 }
 extract() { # pull message text from a provider JSON response on stdin
-  python3 -c "import json,sys
+  "${PY:-python3}" -c "import json,sys
 d=json.load(sys.stdin)
 print($1)" 2>/dev/null || cat
 }

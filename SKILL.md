@@ -1,6 +1,6 @@
 ---
 name: auto-dev
-description: "Autonomous project-development harness for a single ~5-hour usage session. Front door + playbook for a host-coordinator that discovers a goal from files, prioritizes work against a tiered boundary condition, fans out tier-bound worker agents, lets finished work advise running work via an append-only blackboard, auto-re-plans midway, and governs itself by a wall-clock budget proxy. Two modes: Engineering (flat TODO backlog) and Generative/Research (a semi-connected knowledge field that positions hard nodes by geometry, never 'unsolved'). Supports two-laptop cooperation over a shared git remote. Triggers: /auto-dev, auto-develop, autonomous development, session loop, develop this project for N hours, host-coordinator, knowledge field, attack this conjecture."
+description: "Autonomous project-development harness for a single ~5-hour usage session. Front door + playbook for a host-coordinator that discovers a goal from files, prioritizes work against a tiered boundary condition, fans out tier-bound worker agents, lets finished work advise running work via an append-only blackboard, auto-re-plans midway, and governs itself by a wall-clock budget proxy. Two modes: Engineering (flat TODO backlog) and Generative/Research (a semi-connected knowledge field that positions hard nodes by geometry, never 'unsolved'). Supports two-laptop cooperation over a shared git remote, and literature discovery via an alphaXiv/arXiv bridge. Triggers: /auto-dev, auto-develop, autonomous development, session loop, develop this project for N hours, host-coordinator, knowledge field, attack this conjecture, alphaxiv, arxiv literature search."
 metadata:
   version: "0.1.0"
   last_updated: "2026-06-20"
@@ -100,7 +100,9 @@ A launch-time classifier reads `GOAL.md` (rules in `config/mode.json`):
 1. Seed `GOAL.md`, `config/*`, `inbox/LAUNCH.md` from `templates/`.
 2. Choose a loop engine (`references/loop-setup.md`): native `/loop` **or** ralph Stop hook.
 3. Install `hooks/budget-gate.sh` (pin git-bash on Windows) and, for cross-model verification,
-   set provider keys for `hooks/cross-verify.sh` (`references/cross-model-bridge.md`).
+   set provider keys for `hooks/cross-verify.sh` (`references/cross-model-bridge.md`). Optionally
+   wire the **literature** bridge — `hooks/alphaxiv.sh` works with no key (arXiv); add the alphaXiv
+   MCP server for semantic search (`references/alphaxiv-bridge.md`).
 4. Launch. Watch `state/HANDOFF.md` grow; relaunch from it next session.
 
 See `examples/` for single-operator, two-laptop, deep-reasoning, and generative-conjecture walkthroughs.
@@ -118,7 +120,8 @@ See `examples/` for single-operator, two-laptop, deep-reasoning, and generative-
 - `generative-mode.md` — terse-hard-problem (conjecture) mode
 - `knowledge-field-schema.md` — `field.json` nodes/edges; the never-"unsolved" rule
 - `embeddings-bridge.md` — semi-connected edges via embeddings / LLM-judged fallback
+- `alphaxiv-bridge.md` — literature discovery: arXiv hook (no key) + alphaXiv MCP (semantic, gated)
 
 **Agents (`agents/`):** `scout` · `worker` · `host_coordinator` · `verifier` · `field_generator` · `geometer`
 
-**Hooks (`hooks/`):** `budget-gate.sh` (wall-clock governance) · `cross-verify.sh` (independent cross-model verify)
+**Hooks (`hooks/`):** `budget-gate.sh` (wall-clock governance) · `cross-verify.sh` (independent cross-model verify) · `alphaxiv.sh` (literature: arXiv fallback + alphaXiv MCP)

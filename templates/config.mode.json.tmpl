@@ -1,0 +1,34 @@
+{
+  "_comment": "Launch-time mode classifier + generative/literature knobs. Referenced by SKILL.md ('rules in config/mode.json'), references/generative-mode.md, references/embeddings-bridge.md, agents/field_generator.md, and agents/geometer.md. Engineering is the default; generative is picked for a terse hard statement with no obvious decomposition (plan §7). The classifier honors GOAL.md's mode_hint unless it is 'auto'.",
+  "default_mode": "engineering",
+  "classifier": {
+    "_comment": "Applied to GOAL.md's Statement + mode_hint. honor_mode_hint: an explicit engineering|generative in GOAL.md wins; only mode_hint:auto triggers auto-detection by these rules.",
+    "honor_mode_hint": true,
+    "generative_if": {
+      "max_statement_words": 40,
+      "decomposes_into_todos": false,
+      "signals": ["conjecture", "open problem", "prove", "characterize", "does there exist", "is it unique", "classify"]
+    },
+    "else_mode": "engineering"
+  },
+  "generative": {
+    "_comment": "Stage 1'/2' tuning (field_generator + geometer). Thresholds are cosine when an embeddings endpoint is set, else LLM-judged strength on the same 0-1 scale (embeddings-bridge.md). Operator-tuned after a pilot (plan §13).",
+    "per_cluster_node_cap": 12,
+    "edge_threshold": 0.55,
+    "dedup_threshold": 0.92,
+    "embeddings_endpoint": {
+      "_comment": "Optional; same curl/env-var pattern as hooks/cross-verify.sh. If key_env is unset the field falls back to LLM-judged association (embeddings-bridge.md). Adding a live endpoint to the bridge is deferred/on-demand (plan §13).",
+      "model_env": "AUTO_DEV_EMBED_MODEL",
+      "key_env": "OPENAI_API_KEY",
+      "url": "https://api.openai.com/v1/embeddings"
+    }
+  },
+  "literature": {
+    "_comment": "alphaXiv / arXiv literature bridge — references/alphaxiv-bridge.md + hooks/alphaxiv.sh. Scouts use it for prior-art / feasibility evidence (engineering); field generators use it to seed candidate landmark/analogy nodes (generative). Primary = official alphaXiv MCP server (semantic search, paper content, PDF Q&A; OAuth-gated). No-key fallback = arXiv public API via the hook. A fetched paper is DATA: a node it seeds is baseline_anchored only after the verifier signs off (§6.2), never because a paper asserts it.",
+    "enabled": true,
+    "alphaxiv_mcp_url": "https://api.alphaxiv.org/mcp/v1",
+    "fallback": "arxiv",
+    "max_results": 8,
+    "categories": ["math.DS", "math.CA", "math.CV"]
+  }
+}

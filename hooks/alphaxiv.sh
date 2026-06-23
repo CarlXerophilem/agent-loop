@@ -114,6 +114,10 @@ CMD="${1:-}"
 case "${CMD}" in
   search)
     Q="${2:-}"; MAX="${3:-${DEFAULT_MAX}}"
+    # Coerce a non-numeric/empty max to the default: under `set -u` a non-numeric
+    # MAX makes the later $((MAX+1)) abort with "unbound variable" instead of
+    # degrading cleanly. Never block the loop on a bad arg (see references/alphaxiv-bridge.md).
+    case "${MAX}" in *[!0-9]*|"") MAX="${DEFAULT_MAX}" ;; esac
     [ -n "${Q}" ] || { echo "ALPHAXIV_AVAILABLE=none (empty query)"; usage; exit 2; }
     # If the caller gave no arXiv field prefix, search all fields.
     case "${Q}" in *:*) SQ="${Q}";; *) SQ="all:${Q}";; esac
@@ -132,6 +136,7 @@ case "${CMD}" in
     ;;
   related)
     ID="${2:-}"; MAX="${3:-${DEFAULT_MAX}}"
+    case "${MAX}" in *[!0-9]*|"") MAX="${DEFAULT_MAX}" ;; esac   # see `search` above: keep $((MAX+1)) safe
     [ -n "${ID}" ] || { echo "ALPHAXIV_AVAILABLE=none (no arxiv id)"; usage; exit 2; }
     XML="$(arxiv_fetch --data-urlencode "id_list=${ID}" --data "max_results=1")" \
       || { echo "ALPHAXIV_AVAILABLE=none (network/arxiv unreachable)"; exit 2; }

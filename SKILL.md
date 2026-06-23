@@ -2,8 +2,8 @@
 name: auto-dev
 description: "Autonomous project-development harness for a single ~5-hour usage session. Front door + playbook for a host-coordinator that discovers a goal from files, prioritizes work against a tiered boundary condition, fans out tier-bound worker agents, lets finished work advise running work via an append-only blackboard, auto-re-plans midway, and governs itself by a wall-clock budget proxy. Two modes: Engineering (flat TODO backlog) and Generative/Research (a semi-connected knowledge field that positions hard nodes by geometry, never 'unsolved'). Supports two-laptop cooperation over a shared git remote, and literature discovery via an alphaXiv/arXiv bridge. Triggers: /auto-dev, auto-develop, autonomous development, session loop, develop this project for N hours, host-coordinator, knowledge field, attack this conjecture, alphaxiv, arxiv literature search."
 metadata:
-  version: "0.1.0"
-  last_updated: "2026-06-20"
+  version: "0.2.0"
+  last_updated: "2026-06-24"
   status: experimental
 ---
 
@@ -51,7 +51,7 @@ its `/auto-dev` command **starts** the loop. The autonomy lives in the engine un
    ▼
  ┌── every iteration ───────────────────────────────────────────────────────────┐
  │ 1 DISCOVER   scouts recover goal+backlog from files → state/backlog.jsonl      │
- │                (generative mode: → Stage 1′ GENERATE the field → field.json)   │
+ │                (generative mode: → Stage 1′ GENERATE the field → state/field.json) │
  │ 2 PRIORITIZE rubric → tiers → wall-clock cut-line → plan.ranked.md/cutline.json│
  │                (generative mode: → Stage 2′ POSITION & frontier-map → field.map.md) │
  │ 3 FAN-OUT    host grants TODOs; spawn tier-bound AGT(…) workers in worktrees   │

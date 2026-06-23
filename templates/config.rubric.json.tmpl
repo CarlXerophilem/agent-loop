@@ -1,7 +1,7 @@
 {
-  "_comment": "Engineering-mode prioritization rubric. Mirrors plan §5 / references/rubric.md. Score S = 2*V + E + F + 2*D + C (range 0-21); each axis is an integer 0-3 read from repo+history. Operator retunes weights/bands here without touching logic. Generative mode replaces this entirely (plan §7).",
+  "_comment": "Engineering-mode prioritization rubric. Mirrors plan sec 5 / references/rubric.md. Score S = 2*V + E + F + 2*D + C (range 0-21); each axis is an integer 0-3 read from repo+history. Operator retunes weights/bands here without touching logic. Generative mode replaces this entirely (plan sec 7).",
   "axis_weights": {
-    "_comment": "Multipliers applied to each 0-3 axis score. Value and dependency-freedom are weighted x2 for leverage (plan §5).",
+    "_comment": "Multipliers applied to each 0-3 axis score. Value and dependency-freedom are weighted x2 for leverage (plan sec 5).",
     "value": 2,
     "effort": 1,
     "feasibility": 1,
@@ -9,7 +9,7 @@
     "confidence": 1
   },
   "tier_bands": {
-    "_comment": "Lower inclusive bound on S for each tier. T0 also requires F>=2 (see t0_feasibility_min); below t3_min is T4 blocked/deferred — parked with a reason, never spawned.",
+    "_comment": "Lower inclusive bound on S for each tier. T0 also requires F>=2 (see t0_feasibility_min); below t3_min is T4 blocked/deferred -- parked with a reason, never spawned.",
     "t0_min": 17,
     "t1_min": 13,
     "t2_min": 9,
@@ -17,5 +17,5 @@
     "t0_feasibility_min": 2
   },
   "minutes_per_point": 25,
-  "_calibration_note": "minutes_per_point is calibratable from 1-2 real sessions of logger timing data (plan §13); 25 is the starting default used by the cut-line wall-clock projection in references/rubric.md (it is the same knob the cutline.json projection records as minutes_per_point)."
+  "_calibration_note": "minutes_per_point is calibratable from 1-2 real sessions of logger timing data (plan sec 13); 25 is the starting default used by the cut-line wall-clock projection in references/rubric.md (it is the same knob the cutline.json projection records as minutes_per_point)."
 }

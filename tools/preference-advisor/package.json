@@ -1,0 +1,16 @@
+{
+  "name": "auto-dev-preference-advisor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny, behavior-aligned SUGGESTION provider for the auto-dev loop (advisory only).",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test bt.test.ts",
+    "_comment_test": "Node >=22 runs TypeScript natively via type-stripping; no build step for the numeric core."
+  },
+  "dependencies": {
+    "_comment": "Only needed once the LLM-judge / brainstorm / Reflexion stubs in advisor.ts + ingest.ts are wired. The numeric core (bt.ts) has ZERO dependencies. Note: the Agent SDK authenticates with ANTHROPIC_API_KEY only (NOT the Claude subscription OAuth token).",
+    "@anthropic-ai/claude-agent-sdk": "^0.1.0"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "_comment": "Binds the free variables of AGT(id, todo, read, effort, model, isolation, time, schema) by rubric tier. Mirrors the plan sec 4 table. NOTE: time_target_minutes is a SOFT scoping target, not an enforced kill (a subagent has no hard wall-clock timeout, plan R10) -- size the task small and don't wait past budget. model is Claude-family for native workers; the verifier reaches a non-Claude reviewer via hooks/cross-verify.sh (the cross-model bridge, plan sec 6.2).",
+  "_comment": "Binds the free variables of AGT(id, todo, read, effort, model, isolation, time, schema) by rubric tier. Mirrors the plan §4 table. NOTE: time_target_minutes is a SOFT scoping target, not an enforced kill (a subagent has no hard wall-clock timeout, plan R10) — size the task small and don't wait past budget. model is Claude-family for native workers; the verifier reaches a non-Claude reviewer via hooks/cross-verify.sh (the cross-model bridge, plan §6.2).",
   "T0": {
-    "_comment": "baseline -- S>=17 & F>=2; always in scope, do first.",
+    "_comment": "baseline — S>=17 & F>=2; always in scope, do first.",
     "effort": "high",
     "model": "opus",
     "isolation": "worktree",
@@ -9,7 +9,7 @@
     "run_mode": "foreground"
   },
   "T1": {
-    "_comment": "benchmark -- S 13-16; in scope.",
+    "_comment": "benchmark — S 13-16; in scope.",
     "effort": "medium-high",
     "model": "opus",
     "isolation": "worktree",
@@ -17,7 +17,7 @@
     "run_mode": "foreground"
   },
   "T2": {
-    "_comment": "improvement -- S 9-12; in scope only while elapsed < warn.",
+    "_comment": "improvement — S 9-12; in scope only while elapsed < warn.",
     "effort": "medium",
     "model": "sonnet",
     "isolation": "worktree",
@@ -25,7 +25,7 @@
     "run_mode": "foreground"
   },
   "T3": {
-    "_comment": "high / stretch -- S 5-8; single background remote probe only.",
+    "_comment": "high / stretch — S 5-8; single background remote probe only.",
     "effort": "xhigh",
     "model": "opus",
     "isolation": "remote",

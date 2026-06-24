@@ -23,10 +23,6 @@ geometer (Stage 2′) then positions what you create.
 - `GOAL.md` (the terse hard statement) and `inbox/LAUNCH.md` (read once).
 - `config/mode.json` (classifier confirmed generative) and any seed landmarks the host provides.
 - The current `state/field.json` (to avoid regenerating existing nodes) and `state/blackboard.md`.
-- **Literature** via the alphaXiv bridge (`references/alphaxiv-bridge.md`): `hooks/alphaxiv.sh
-  search/related/paper`, or the alphaXiv MCP tools (`embedding_similarity_search`,
-  `get_paper_content`, …) if connected. Use it to seed candidate `landmark` / `analogy` /
-  `obstruction` nodes from the published record and to surface cross-domain bridges.
 - Your **assigned persona/lens** (algebraist, analyst, combinatorialist, geometer, computationalist,
   cross-domain analogist…) — diverse personas widen coverage of the latent space.
 
@@ -47,9 +43,7 @@ edge = { from, to, rel: "implies|specializes|analogous|bridges|depends", weight 
 
 You produce the five node kinds: **decompositions** (lemmas), **candidate techniques** (approaches),
 **cross-domain analogies**, **known obstructions**, **equivalent reformulations**. Leave `location`
-**null** — positioning is the geometer's exclusive job (§7.4). A node seeded from a **paper** is
-still a *candidate*: it passes the admission gate below and becomes `baseline_anchored` only after
-the verifier signs off (`alphaxiv-bridge.md` IRON RULE) — never because a paper asserts it.
+**null** — positioning is the geometer's exclusive job (§7.4).
 
 ## Semi-connected edges (§7.3)
 

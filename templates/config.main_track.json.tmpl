@@ -1,7 +1,0 @@
-{
-  "_comment": "Drives the automatic re-plan trigger (SKILL.md phase 5; plan sec 8). The host re-runs phase 2 when BOTH hold: (a) open_grants subset of main_track -- everything still in flight belongs to the planned line of work, no rogue/out-of-scope grants; AND (b) count(open_grants) <= main_track_max -- few enough remain that re-planning the rest pays off. The 'main track' is the admitted cut-line set from state/cutline.json (order[0..cut_index]), INCLUDING any single admitted T2/T3 probe (see walkthrough-single-operator sec 5, where the lone admitted T2 probe IS in main_track) -- it is NOT ad-hoc work a worker spun up outside its grant. Phase 2 normally populates main_track_ids from cutline.json each re-plan; hand-list ids only to pin them.",
-  "source": "state/cutline.json:order[0..cut_index]",
-  "main_track_ids": [],
-  "main_track_max": 2,
-  "include_admitted_probes": true
-}

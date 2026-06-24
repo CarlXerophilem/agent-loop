@@ -68,7 +68,7 @@ host calls the bridge with a **no-anchoring** prompt — the verifier is told it
 work and is given only the *claim*, never `cand.r1.md`:
 
 ```bash
-bash hooks/cross-verify.sh "INDEPENDENT CHECK. You did not write this. Claim: for
+hooks/cross-verify.sh "INDEPENDENT CHECK. You did not write this. Claim: for
   f(x)=x+x^2+x^3, the order-1..4 coefficients of any formal half-iterate g (g∘g=f)
   are uniquely c_1=1,c_2=1/2,c_3=1/8,c_4=-1/16. Re-derive from scratch; find any
   error or unstated assumption."
@@ -93,7 +93,7 @@ Run the same loop on a laptop with **no** API key. `cross-verify.sh` detects the
 degrades — it never blocks the loop:
 
 ```
-$ bash hooks/cross-verify.sh "INDEPENDENT CHECK ..."
+$ hooks/cross-verify.sh "INDEPENDENT CHECK ..."
 CROSS_MODEL_AVAILABLE=none (no DEEPSEEK_API_KEY)         # exit 2
 ```
 

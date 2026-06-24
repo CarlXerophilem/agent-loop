@@ -24,7 +24,7 @@ solver reads on its next wake. You are not the solver; you do not produce the ar
 
 ## Verification path (in order of availability, §6.2)
 
-1. **Cross-model bridge** — call `bash hooks/cross-verify.sh "<verification prompt>"`. It routes to an
+1. **Cross-model bridge** — call `hooks/cross-verify.sh "<verification prompt>"`. It routes to an
    independent provider (`$AUTO_DEV_CROSS_MODEL` + key: DeepSeek / GPT / Gemini) with a no-anchoring
    system prompt. Tag every novel issue it raises `[CROSS-MODEL-FINDING]`.
 2. **Same-family DA panel (no-key fallback)** — if the script prints `CROSS_MODEL_AVAILABLE=none`

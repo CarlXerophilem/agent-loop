@@ -58,7 +58,7 @@ The T0 `F≥2` gate is a guard: a high-S task with shaky feasibility is *not* ba
 6. T4 items never enter the projection — park in state/parked.md with a reason
 ```
 
-- `minutes_per_point` (the `config/rubric.json` key) and its calibration are **deferred** until 1–2 real sessions of data (plan §13) — start with the shipped default (25) and retune.
+- `minutes_per_point` and `minutes_per_point` calibration are **deferred** until 1–2 real sessions of data (plan §13) — start with the `config/rubric.json` default and retune.
 - Re-running the cut-line against the *remaining* budget is exactly what phase 5 (automatic re-plan) does — see plan §8 and `state/replan.log`.
 
 **Outputs:** `state/plan.ranked.md` (pill table), `state/cutline.json` (ordered ids + cut index + projection inputs).

@@ -16,10 +16,6 @@ runs (unlike the local-only `loop-state.local.json`).
       `state/preferences.md`) using the mature designs cited in its README.
 - [ ] Add the Claude **Agent SDK** as a 4th local loop driver in `references/loop-setup.md`
       (note: SDK auth is `ANTHROPIC_API_KEY` only -- no subscription OAuth).
-- [ ] Add a smoke assertion that `budget-gate.sh` emits **valid JSON** at ok/warn/stop
-      (pipe each through a JSON parser; today only the `[budget-gate:...]` substring is checked).
-- [ ] Add a smoke assertion that every `hooks/*.sh` passes `bash -n` (syntax) and starts
-      with a `#!` shebang line.
 - [ ] Add a smoke assertion that `references/*.md` internal links (`` `file.md` `` / relative
       paths) resolve to files that exist in the repo (catch dangling references early).
 - [ ] Unify the Python-interpreter resolution style across `hooks/alphaxiv.sh` and
@@ -32,6 +28,8 @@ runs (unlike the local-only `loop-state.local.json`).
 
 ## Done (most recent first)
 
+- [x] Harden hook smoke coverage: assert `budget-gate.sh` emits valid JSON at ok/warn/stop, and
+      every `hooks/*.sh` has a `#!` shebang + passes `bash -n`. Smoke 20 -> 26.
 - [x] Preference-advisor: verified online Bradley-Terry core (`tools/preference-advisor/bt.ts`)
       + passing tests; design + safety rails in `references/preference-advisor.md`.
 - [x] ASCII-fold all JSON templates; coerce non-numeric `max` in `alphaxiv.sh`; smoke 13 -> 20.

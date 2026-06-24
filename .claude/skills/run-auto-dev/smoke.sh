@@ -34,6 +34,11 @@ expect_grep(){ local re="$1" desc="$2"; shift 2
 no_grep(){ local re="$1" desc="$2"; shift 2
   "$@" >"${TMP}/o" 2>"${TMP}/e"
   if grep -qE "${re}" "${TMP}/o" "${TMP}/e"; then no "${desc} (unexpected /${re}/); out: $(head -1 "${TMP}/o" "${TMP}/e" 2>/dev/null|tr '\n' ' ')"; else ok "${desc} (no /${re}/)"; fi; }
+# json_ok "desc" cmd...  -- run cmd, assert its stdout parses as valid JSON (needs PY; else SKIP)
+json_ok(){ local desc="$1"; shift
+  if [ -z "${PY}" ]; then sk "${desc} -- no python to validate JSON"; return; fi
+  "$@" >"${TMP}/o" 2>"${TMP}/e"
+  if "${PY}" -c 'import json,sys; json.load(open(sys.argv[1]))' "${TMP}/o" 2>"${TMP}/ej"; then ok "${desc} (valid JSON)"; else no "${desc} (invalid JSON): $(tail -1 "${TMP}/ej" 2>/dev/null)"; fi; }
 
 [ -d "${H}" ] || { echo "FATAL: hooks/ not found at ${H} -- run from inside the auto-dev repo."; exit 3; }
 echo "auto-dev smoke harness"
@@ -77,10 +82,13 @@ FH="${TMP}/harness"; mkdir -p "${FH}/state" "${FH}/config"
 printf '{ "session_budget_minutes": 300, "warn_at_elapsed_fraction": 0.70, "hard_stop_at_elapsed_fraction": 0.90 }\n' > "${FH}/config/budget.json"
 date +%s > "${FH}/state/session.start"
 expect_grep '\[budget-gate:ok\]'   "fresh session -> ok"   bash "${H}/budget-gate.sh" "${FH}"
+json_ok "budget-gate ok -> valid JSON"                      bash "${H}/budget-gate.sh" "${FH}"
 echo $(( $(date +%s) - 240*60 )) > "${FH}/state/session.start"   # 80% of 300m
 expect_grep '\[budget-gate:warn\]' "80% elapsed -> warn"   bash "${H}/budget-gate.sh" "${FH}"
+json_ok "budget-gate warn -> valid JSON"                    bash "${H}/budget-gate.sh" "${FH}"
 echo $(( $(date +%s) - 300*60 )) > "${FH}/state/session.start"   # 100%
 expect_grep '\[budget-gate:stop\]' "100% elapsed -> stop"  bash "${H}/budget-gate.sh" "${FH}"
+json_ok "budget-gate stop -> valid JSON"                    bash "${H}/budget-gate.sh" "${FH}"
 
 echo "== 4) templates (config + field must be ASCII and valid JSON) =="
 # Harness rule (references/loop-setup.md + this skill's Gotchas): state/config JSON must be
@@ -99,6 +107,19 @@ if [ -n "${PY}" ]; then
 else
   sk "template ASCII/JSON check -- no python interpreter resolved"
 fi
+
+echo "== 5) hook scripts: shebang + bash -n (syntax) =="
+# Every executable hook must start with a #! line and parse cleanly. Catches a syntax
+# error or a stripped shebang in any hook before the harness invokes it unattended.
+for hk in "${H}"/*.sh; do
+  [ -f "${hk}" ] || continue
+  name="hooks/$(basename "${hk}")"
+  if head -1 "${hk}" | grep -q '^#!' && bash -n "${hk}" 2>"${TMP}/e"; then
+    ok "${name}: shebang + bash -n clean"
+  else
+    no "${name}: bad shebang or syntax: $(tail -1 "${TMP}/e" 2>/dev/null)"
+  fi
+done
 
 echo "== RESULT: pass=${pass} fail=${fail} skip=${skip} =="
 [ "${fail}" -eq 0 ]

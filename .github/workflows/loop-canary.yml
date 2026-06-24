@@ -1,0 +1,63 @@
+name: auto-dev loop (canary)
+
+# ZERO-COST plumbing experiment. Run this MANUALLY first:
+#   Actions tab -> "auto-dev loop (canary)" -> Run workflow
+# It needs NO Anthropic secret -- it uses only the built-in GITHUB_TOKEN and
+# proves the three things the scheduled loop depends on:
+#   1. the runner can run the run-auto-dev smoke suite (bash/python/curl present),
+#   2. the default-branch working tree is self-consistent (smoke passes),
+#   3. the job can open + close a pull request via `gh` + GITHUB_TOKEN
+#      (the exact mechanism the loop uses to surface improvements).
+# It leaves no litter: the heartbeat PR is opened then immediately closed and its
+# branch deleted.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-dev-canary
+  cancel-in-progress: true
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Toolchain (bash / python / curl / gh)
+        run: |
+          set -euo pipefail
+          bash --version | head -1
+          (python3 --version || python --version)
+          curl --version | head -1
+          gh --version | head -1
+
+      - name: Run run-auto-dev smoke suite
+        run: bash .claude/skills/run-auto-dev/smoke.sh
+
+      - name: Prove the PR path (open + close + delete branch, no litter)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name  "auto-dev-canary[bot]"
+          git config user.email "auto-dev-canary@users.noreply.github.com"
+          BR="canary/heartbeat-${{ github.run_id }}"
+          git checkout -b "$BR"
+          mkdir -p state
+          echo "canary run ${{ github.run_id }}" > state/.canary-heartbeat
+          git add state/.canary-heartbeat
+          git commit -m "canary: heartbeat ${{ github.run_id }} (auto-closed)"
+          git push origin "$BR"
+          URL="$(gh pr create --base "${{ github.ref_name }}" --head "$BR" \
+                   --title "canary heartbeat ${{ github.run_id }} (auto-closed)" \
+                   --body "Plumbing check from loop-canary.yml. Closing automatically.")"
+          echo "opened: $URL"
+          gh pr close "$BR" --delete-branch
+          echo "OK: PR path verified (opened, then closed + branch deleted)."

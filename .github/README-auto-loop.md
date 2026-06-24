@@ -6,7 +6,7 @@ schedule — **no laptop needs to stay open**. Three workflows:
 | Workflow | File | Trigger | Cost | What it does |
 |---|---|---|---|---|
 | **canary** | `workflows/loop-canary.yml` | manual | $0 (no secret) | Proves the plumbing: runner runs the smoke suite, and a PR can be opened/closed via the built-in token. |
-| **loop (improve)** | `workflows/auto-loop.yml` | every 6h + manual | API/subscription tokens | One small, smoke-gated improvement per run → opens a PR for review. |
+| **loop (improve)** | `workflows/auto-loop.yml` | daily + manual | API/subscription tokens | One small, smoke-gated improvement per run → opens a PR for review. |
 | **smoke** | `workflows/smoke.yml` | push/PR to `main` | $0 | Runs the 20-assertion smoke suite as a status check on `main` and human PRs. |
 
 ## One-time setup
@@ -40,7 +40,7 @@ schedule — **no laptop needs to stay open**. Three workflows:
    **Run workflow**. This runs the full loop once end-to-end; if it finds an improvement it
    opens a PR (smoke-gated). Review it.
 3. **Go 24/7** — Settings → Secrets and variables → Actions → *Variables* → add
-   `LOOP_ENABLED = true`. Scheduled runs (every 6h) now execute. The manual button keeps
+   `LOOP_ENABLED = true`. Scheduled runs (daily, 09:07 UTC) now execute. The manual button keeps
    working regardless of this variable.
 
 ## Pause / stop

@@ -8,7 +8,7 @@ name: auto-dev loop (improve)
 #   1. Run "auto-dev loop (canary)" once  -> proves the plumbing ($0, no secret).
 #   2. Add ONE secret: CLAUDE_CODE_OAUTH_TOKEN (subscription) OR ANTHROPIC_API_KEY (API).
 #   3. Dispatch THIS workflow once manually -> validates the full loop end-to-end.
-#   4. Set repo variable LOOP_ENABLED=true  -> scheduled 24/7 runs begin.
+#   4. Set repo variable LOOP_ENABLED=true  -> the daily scheduled run begins.
 #      Flip it back to false to pause, with no code change.
 
 on:
@@ -23,7 +23,7 @@ on:
         default: "12"
         required: false
   schedule:
-    - cron: "7 */6 * * *"   # every 6h; scheduled runs are gated by repo var LOOP_ENABLED
+    - cron: "7 9 * * *"   # daily at 09:07 UTC; scheduled runs are gated by repo var LOOP_ENABLED
 
 permissions:
   contents: write

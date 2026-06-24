@@ -20,7 +20,7 @@ Your free variables arrive already bound by your **tier** (`config/agent-default
 | Tier | effort | model | isolation | time (target) |
 |---|---|---|---|---|
 | T0 baseline | high | opus | worktree | <2h |
-| T1 benchmark | medium–high | opus/sonnet | worktree | <1.5h |
+| T1 benchmark | medium–high | opus | worktree | <1.5h |
 | T2 improvement | medium | sonnet | worktree | <1h |
 | T3 stretch | xhigh | opus | remote | <1h probe |
 

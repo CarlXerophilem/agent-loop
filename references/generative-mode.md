@@ -27,6 +27,8 @@ Divergent generator agents (`AGT`, effort `xhigh`, **diverse personas**, backgro
 
 **Semi-connected edges** are associative links where proximity exceeds a threshold — embeddings cosine-similarity (via the bridge), or LLM-judged association as the no-key fallback. See `embeddings-bridge.md` and `knowledge-field-schema.md`. The field is **sparse + clustered + bridged, not a tree.** Data model: `state/field.json`.
 
+Generators may **seed candidate nodes from the literature** via the alphaXiv bridge (`alphaxiv-bridge.md`): a published result becomes a candidate `landmark`, a known barrier an `obstruction`, a cross-domain correspondence an `analogy`. Each is still only a *candidate* — it passes the admission gate and becomes `baseline_anchored` only after verifier sign-off, never because a paper claims it.
+
 ---
 
 ## Stage 2′ — Position & frontier-map

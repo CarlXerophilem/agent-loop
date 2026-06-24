@@ -121,5 +121,14 @@ for hk in "${H}"/*.sh; do
   fi
 done
 
+echo "== 6) doc link integrity (in-repo references resolve) =="
+# Catch dangling references: every references/ agents/ hooks/ templates/ examples/ path
+# mentioned in SKILL.md or references/*.md must exist in the repo. Runtime dirs (state/,
+# config/, inbox/) are created at launch from templates, so they are intentionally excluded.
+refs="$(grep -rhoE '(references|agents|hooks|templates|examples)/[A-Za-z0-9._/-]+' "${ROOT}/SKILL.md" "${ROOT}"/references/*.md 2>/dev/null | sed 's/[.,):]*$//' | sort -u)"
+miss=""
+for p in ${refs}; do [ -e "${ROOT}/${p}" ] || miss="${miss} ${p}"; done
+if [ -z "${miss}" ]; then ok "all in-repo doc references resolve ($(printf '%s\n' "${refs}" | grep -c .) paths)"; else no "dangling doc references:${miss}"; fi
+
 echo "== RESULT: pass=${pass} fail=${fail} skip=${skip} =="
 [ "${fail}" -eq 0 ]

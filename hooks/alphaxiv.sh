@@ -33,6 +33,9 @@ MCP_URL="${ALPHAXIV_MCP_URL:-https://api.alphaxiv.org/mcp/v1}"
 DEFAULT_MAX="${ALPHAXIV_MAX:-8}"
 SORT="${ALPHAXIV_SORT:-relevance}"   # relevance | lastUpdatedDate | submittedDate
 # Resolve a Python 3 interpreter under any common name (python3 on *nix, python/py on Windows).
+# Convention (shared with hooks/cross-verify.sh): resolve once into PY, then GUARD each use
+# with `[ -n "${PY}" ]` and branch to a non-Python fallback (here: awk line-mode in parse())
+# -- never `${PY:-python3}`, which would re-run a `python3` that `command -v` already ruled out.
 PY="$(command -v python3 || command -v python || command -v py || true)"
 
 # Print the "# Usage:" comment block (robust to line-number shifts).

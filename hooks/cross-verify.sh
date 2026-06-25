@@ -18,16 +18,19 @@ MODEL="${AUTO_DEV_CROSS_MODEL:-}"
 # Resolve a Python 3 interpreter under any common name (python3 on *nix; python/py on
 # Windows). Without this, a box that ships `python` but not `python3` silently degrades
 # extract() to raw JSON. node / cat remain the last-resort fallbacks.
+# Convention (shared with hooks/alphaxiv.sh): resolve once into PY, then GUARD every use
+# with `[ -n "${PY}" ]` and branch to a non-Python fallback -- never `${PY:-python3}`,
+# which would re-run a `python3` that `command -v` already ruled out.
 PY="$(command -v python3 || command -v python || command -v py || true)"
 
 json_escape() { # JSON-encode stdin as a string literal
-  "${PY:-python3}" -c 'import json,sys; print(json.dumps(sys.stdin.read()))' 2>/dev/null \
+  { [ -n "${PY}" ] && "${PY}" -c 'import json,sys; print(json.dumps(sys.stdin.read()))' 2>/dev/null; } \
     || node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.stringify(s)))'
 }
 extract() { # pull message text from a provider JSON response on stdin
-  "${PY:-python3}" -c "import json,sys
+  { [ -n "${PY}" ] && "${PY}" -c "import json,sys
 d=json.load(sys.stdin)
-print($1)" 2>/dev/null || cat
+print($1)" 2>/dev/null; } || cat
 }
 P="$(printf '%s' "${PROMPT}" | json_escape)"
 SYS="You are an independent verification assistant. You did NOT write the work under review. Find the most serious weaknesses; if rigorous, say so explicitly."

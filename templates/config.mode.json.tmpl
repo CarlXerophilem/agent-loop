@@ -1,18 +1,166 @@
 {
-  "_comment": "Launch-time mode classifier + generative/literature knobs. Referenced by SKILL.md ('rules in config/mode.json'), references/generative-mode.md, references/embeddings-bridge.md, agents/field_generator.md, and agents/geometer.md. Engineering is the default; generative is picked for a terse hard statement with no obvious decomposition (plan sec 7). The classifier honors GOAL.md's mode_hint unless it is 'auto'.",
+  "_comment": "Launch-time mode classifier + per-mode knobs. Referenced by SKILL.md ('rules in config/mode.json'), references/initial-modes.md, references/generative-mode.md, references/embeddings-bridge.md, agents/field_generator.md, agents/geometer.md. PURE ASCII + valid JSON (smoke suite enforces both). The classifier runs ONCE at launch, reads GOAL.md Statement + mode_hint, and COMPILES the hint into a normalized profile {base, overlays[], knobs} persisted to state/mode.resolved.json. Phases 1-6 read the RESOLVED profile, never this raw file. BASE owns phase-1/2 semantics (engineering rubric / generative field / mixed router). OVERLAYS (ultracode, brainstorm-first) are pure config-deltas that never change the 1->2->3->4->5->6 order or any IRON RULE.",
   "default_mode": "engineering",
+  "bases": ["engineering", "generative", "mixed"],
+  "overlay_tokens": ["ultracode", "brainstorm-first"],
+  "mode_hint_vocabulary": [
+    "engineering",
+    "generative",
+    "mixed",
+    "ultracode",
+    "brainstorm-first",
+    "auto",
+    "engineering+ultracode",
+    "generative+ultracode",
+    "mixed+ultracode",
+    "engineering+brainstorm-first",
+    "generative+brainstorm-first",
+    "mixed+brainstorm-first",
+    "engineering+ultracode+brainstorm-first",
+    "generative+ultracode+brainstorm-first",
+    "mixed+ultracode+brainstorm-first"
+  ],
+  "_mode_hint_vocabulary_comment": "Representative list. The tokenizer (classifier.compile_steps.step_a) accepts ANY one base (engineering|generative|mixed or auto) optionally '+'-joined with any subset of overlay_tokens, in any order (overlays are commutative). Unknown or >1-base tokens FAIL LAUNCH LOUDLY.",
   "classifier": {
-    "_comment": "Applied to GOAL.md's Statement + mode_hint. honor_mode_hint: an explicit engineering|generative in GOAL.md wins; only mode_hint:auto triggers auto-detection by these rules.",
+    "_comment": "Applied to GOAL.md Statement + mode_hint. honor_mode_hint: an explicit base token (engineering|generative|mixed) always wins; only mode_hint:auto or empty triggers signal-based detection. STEPS A-E below describe the compile. Determinism: same (Statement, mode_hint, config) -> same state/mode.resolved.json.",
     "honor_mode_hint": true,
+    "compile_steps": {
+      "_comment": "Pipeline the classifier follows to turn mode_hint into the resolved profile.",
+      "step_a_tokenize": "Split mode_hint on '+'. BASE tokens: engineering|generative|mixed. OVERLAY tokens: ultracode|brainstorm-first. Special: auto / empty.",
+      "step_b_resolve_base": "If a base token is present, use it (explicit beats auto). Elif auto/empty, run generative_if then mixed_if. Elif only overlay token(s), resolve base by the same auto test then attach the overlay(s).",
+      "step_c_resolve_overlays": "Collect every overlay token; map each to its knob block under 'overlays'. Order-independent and stackable.",
+      "step_d_validate_clamp": "Reject unknown tokens -> FAIL LAUNCH LOUDLY (never silently default). Reject >1 base token. Clamp all knobs to config/budget.json + config/agent-defaults.json.",
+      "step_e_persist": "Write state/mode.resolved.json = {base, overlays[], knobs}. Phases 1-6 read THIS."
+    },
     "generative_if": {
+      "_comment": "Under mode_hint:auto/empty (or a bare-overlay base resolution), pick generative for a terse hard statement with no obvious decomposition.",
       "max_statement_words": 40,
       "decomposes_into_todos": false,
       "signals": ["conjecture", "open problem", "prove", "characterize", "does there exist", "is it unique", "classify"]
     },
-    "else_mode": "engineering"
+    "mixed_if": {
+      "_comment": "Under mode_hint:auto/empty, auto-pick mixed when the Statement BOTH decomposes into TODOs AND carries >=1 generative signal or an operator-flagged hard sub-goal. Explicit base token always wins (precedence 1).",
+      "decomposes_into_todos": true,
+      "min_generative_signals": 1,
+      "signals": ["conjecture", "open problem", "prove", "characterize", "does there exist", "is it unique", "classify"],
+      "or_operator_flagged_hard": true
+    },
+    "else_mode": "engineering",
+    "unknown_token_policy": "fail_launch_loudly",
+    "max_one_base": true
+  },
+  "mixed": {
+    "_comment": "BASE #3 (composite). Runs the engineering rubric engine AND the generative field engine concurrently with a per-node router and a unified cut-line. Reuses rubric.json (engineering) and the generative field tuning below UNCHANGED; only the merge/dispatch layer is new. See references/initial-modes.md.",
+    "router": {
+      "_comment": "Stamps engine on every node at creation, immutable for life. Logged to state/router.log; verifier asserts the invariant.",
+      "engine_field": "engine",
+      "values": ["engineering", "generative"],
+      "route_generative_if_signals": true,
+      "route_generative_if_operator_flagged_hard": true,
+      "reroute_engineering_to_generative_on_F0_no_path": true,
+      "reroute_is_one_way": true,
+      "generative_node_may_spawn_engineering_child": true
+    },
+    "unified_cutline": {
+      "_comment": "Common-currency merge of heterogeneous items vs ONE wall-clock cut-line. Engineering p = S/21 (S=2V+E+F+2D+C, rubric.md). Generative p = (leverage*reachability*uncertainty)/max_observed, clamped [0,1]. Sort: tier asc within engineering, then p desc across the merged queue; topo-respect cross-track edges; one wall-clock projection vs remaining budget.",
+      "engineering_norm": "S_over_21",
+      "generative_norm": "frontier_score_over_max_observed",
+      "generative_probe_minutes": 25,
+      "min_track_share": {
+        "_comment": "Per-track floor so neither engine starves the other in discovery + fan-out. Fractions of the merged budget; must sum <= 1; remainder is contested by p. Governance can still override (precedence 5).",
+        "engineering": 0.30,
+        "generative": 0.30
+      },
+      "far_tier_wording_by_engine": {
+        "engineering": "blocked-deferred-with-reason",
+        "generative": "deep-frontier"
+      },
+      "outputs": ["state/plan.ranked.md", "state/cutline.json"]
+    },
+    "governance_shared": {
+      "_comment": "One wall-clock proxy (budget.json) governs both tracks. warn sheds T2/T3 engineering AND low-leverage deep-frontier probes; hard_stop stops spawning in both, writes a dual-track HANDOFF.",
+      "warn_sheds": ["engineering_T2", "engineering_T3", "generative_low_leverage_probe"],
+      "hard_stop_stops_spawning_all_tracks": true
+    },
+    "invariants": {
+      "_comment": "Verifier-enforced. Honest completion coexists with never-unsolved by routing the rule PER NODE, never globally.",
+      "engineering_completion_gated_on_tests_lint": true,
+      "no_generative_node_stamped_unsolved_impossible_failed": true,
+      "one_node_one_engine_for_life": true
+    }
+  },
+  "overlays": {
+    "_comment": "Pure config-delta modifiers compiled by STEP C/D onto a resolved base. Knobs are REQUESTS: STEP D clamps them to config/budget.json + config/agent-defaults.json; governance (warn/shed/stop) stays authoritative. Overlays are commutative and stackable and NEVER add a numbered phase or reorder 1..6.",
+    "ultracode": {
+      "_comment": "Maximum-thoroughness intensity overlay. Selectable by name via mode_hint: bare 'ultracode' (base auto-resolved) or 'engineering+ultracode' / 'generative+ultracode' / 'mixed+ultracode'. Deepens phase 1 DISCOVER (slow + multi-thread, loop-until-dry) and widens phase 3 FAN-OUT; xhigh effort. Adds NO numbered phase; the until-dry cycle is an INNER loop wholly inside phase 1 (mirroring generative Stage 1'/2' inside phases 1-2).",
+      "slow_discovery": {
+        "_comment": "Phase 1 only: run DISCOVER slowly + exhaustively with a multi-modal scout fleet and a loop-until-dry completeness critic. dedup_threshold is RAISED toward 1.0 so near-duplicate findings are kept longer; a single convergent dedup pass runs at the end of discovery. discovery_wallclock_share is the max fraction of session_budget_minutes phase 1 may consume so phases 2-6 still get time and governance still bites; STEP D clamps it.",
+        "enabled": true,
+        "effort": "xhigh",
+        "scout_count": 8,
+        "scout_count_cap_key": "max_parallel_workers",
+        "discovery_modes": ["by_container", "by_content", "by_entity"],
+        "dedup_threshold": 0.97,
+        "discovery_wallclock_share": 0.45,
+        "until_dry": {
+          "_comment": "Stopping rule for the loop-until-dry cycle. Stop when ANY holds (whichever is first): marginal_yield < min_marginal_yield_ratio for consecutive_dry_rounds in a row; OR coverage_floor of known containers/entities mapped AND require_zero_unresolved_refs satisfied; OR max_discovery_rounds hit; OR the clamped discovery_wallclock_share is exhausted. The completeness critic writes state/discovery.coverage.json each round.",
+          "min_marginal_yield_ratio": 0.05,
+          "consecutive_dry_rounds": 2,
+          "coverage_floor": 0.98,
+          "max_discovery_rounds": 6,
+          "require_zero_unresolved_refs": true
+        }
+      },
+      "multi_thread": {
+        "_comment": "Phase 3 only: widen FAN-OUT to maximum SAFE concurrency. fan_out_width is clamped to min(requested, budget cap, worktree cap) by STEP D. Workers still edit only inside their own worktree; never force-push shared branches.",
+        "enabled": true,
+        "fan_out_width": 8,
+        "fan_out_width_cap_key": "max_parallel_workers",
+        "worker_effort": "xhigh"
+      },
+      "governance_reconciliation": {
+        "_comment": "ultracode CAN blow normal budgets. It NEVER silently bypasses governance and NEVER lies about completion. require_operator_ack must be satisfied at launch: the operator either raises config/budget.json session_budget_minutes or sets acknowledged_long_session:true in inbox/LAUNCH.md. warn/hard_stop then fire against the (larger) window and remain authoritative; the wall-clock hard-stop and honest-completion IRON RULE are never overridden by this overlay. Still a proxy: it does NOT read the real account cap.",
+        "require_operator_ack": true,
+        "ack_source": "inbox/LAUNCH.md:acknowledged_long_session",
+        "raised_budget_source": "config/budget.json:session_budget_minutes",
+        "fail_launch_if_unacked": true,
+        "governance_is_authoritative": true
+      }
+    },
+    "brainstorm-first": {
+      "_comment": "Stage 0 ideation overlay. Selectable by name via mode_hint: bare 'brainstorm-first' (base auto-resolved AFTER Stage 0 refines the Statement) or composed e.g. 'engineering+brainstorm-first'. Prepends a one-time Stage 0 (diverge -> converge) BEFORE phase 1; it is numbered 0 (a prepend, mirroring generative Stage 1'/2'), NOT a 7th per-iteration phase, and runs ONCE at launch. Output is a PROPOSAL that refines GOAL.md and recommends a base; never a silent edit or instruction.",
+      "phase0_ideation": true,
+      "runs_once_at_launch": true,
+      "is_per_iteration_phase": false,
+      "diverge": {
+        "_comment": "Spawn divergent ideation agents reusing the generative Stage 1' personas at effort xhigh, background. Candidates appended append-only to state/brainstorm.jsonl as DATA, not instructions.",
+        "ideation_agents": 4,
+        "effort": "xhigh",
+        "background": true,
+        "reuse_generative_personas": true,
+        "candidate_kinds": ["intent", "requirement", "design_option", "risk", "success_criterion", "base_recommendation"]
+      },
+      "converge": {
+        "_comment": "Single convergent pass (ideally cross-model per deep-reasoning-loop.md) clusters/dedups candidates (reuse the generative dedup_threshold scale), scores survivors on intent_fit x feasibility x clarity, and selects a refined Statement + Success criteria + Constraints + recommended base into state/brainstorm.proposal.md.",
+        "cross_model_select": true,
+        "dedup_threshold": 0.92,
+        "score_axes": ["intent_fit", "feasibility", "clarity"],
+        "outputs": ["state/brainstorm.jsonl", "state/brainstorm.proposal.md"]
+      },
+      "wallclock_share": 0.12,
+      "wallclock_share_max": 0.2,
+      "confirmation": {
+        "_comment": "Honesty: brainstorm output is UNTRUSTED DATA and a PROPOSAL, never a silent edit or instruction. Operator confirms at relaunch; loop auto-confirm only when the convergent selection passes the cross-model verify gate. The proposal honestly records what was assumed and what stays open. On confirmation the classifier re-runs on the refined Statement to finalize a bare/auto base (explicit base token still wins).",
+        "mode": "operator_or_verified_autoconfirm",
+        "writes_goal_refined_draft": true,
+        "applies_to_goal_md_silently": false,
+        "rerun_classifier_on_refined_statement": true
+      },
+      "stacks_with_ultracode": true
+    }
   },
   "generative": {
-    "_comment": "Stage 1'/2' tuning (field_generator + geometer). Thresholds are cosine when an embeddings endpoint is set, else LLM-judged strength on the same 0-1 scale (embeddings-bridge.md). Operator-tuned after a pilot (plan sec 13).",
+    "_comment": "Stage 1'/2' tuning (field_generator + geometer). Thresholds are cosine when an embeddings endpoint is set, else LLM-judged strength on the same 0-1 scale (embeddings-bridge.md). Operator-tuned after a pilot (plan sec 13). Reused unchanged by base=mixed generative-routed nodes and by the brainstorm-first Stage 0 personas.",
     "per_cluster_node_cap": 12,
     "edge_threshold": 0.55,
     "dedup_threshold": 0.92,

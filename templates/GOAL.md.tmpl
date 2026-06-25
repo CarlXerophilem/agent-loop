@@ -13,11 +13,45 @@ Make the half-iterate solver return exact rational coefficients for every non-pa
 
 ## mode_hint
 
-<!-- engineering | generative | auto
-     engineering  → flat TODO backlog + rubric tiers (plan §5)
-     generative   → semi-connected knowledge field, positions hard nodes by
-                    geometry, NEVER "unsolved" (plan §7 IRON RULE)
-     auto         → let config/mode.json's classifier decide from the Statement -->
+<!-- One base, optionally '+'-joined with overlays. The launch classifier
+     (config/mode.json) compiles this into state/mode.resolved.json = {base,
+     overlays[], knobs}; phases 1-6 read the resolved profile, not this raw hint.
+     Unknown tokens or >1 base token FAIL LAUNCH LOUDLY (never silent default).
+
+     BASES (exactly one; pick phase-1/2 semantics):
+       engineering  -> flat TODO backlog + rubric tiers T0-T4 (plan sec 5)
+       generative   -> semi-connected knowledge field; positions hard nodes by
+                       geometry, NEVER "unsolved" (plan sec 7 IRON RULE)
+       mixed        -> COMPOSITE: engineering rubric backlog AND generative field
+                       run concurrently; a per-node router stamps each node's
+                       engine and phase 2 merges T0-T4 TODOs with field frontier
+                       nodes onto ONE unified cut-line. Honest-completion and
+                       never-"unsolved" coexist (rule chosen per node by engine).
+       auto         -> let config/mode.json decide from the Statement
+                       (generative_if -> generative; else mixed_if -> mixed;
+                        else engineering)
+
+     OVERLAYS (zero or more; commutative, stackable; modify a base, add NO
+     numbered phase, change nothing in the 1..6 order or the IRON RULES):
+       ultracode        -> maximum-thoroughness intensity: phase 1 DISCOVER runs
+                           slow + multi-thread looping UNTIL-DRY; phase 3 FAN-OUT
+                           at max safe concurrency; xhigh effort. REQUIRES an
+                           operator-acknowledged raised session_budget_minutes
+                           (or acknowledged_long_session in inbox/LAUNCH.md) or
+                           launch fails; governance stays authoritative.
+       brainstorm-first -> prepends a one-time Stage 0 ideation pass for fuzzy
+                           GOALs (diverge with generative personas -> converge to
+                           a refined-GOAL PROPOSAL + recommended base). Output is
+                           a proposal you confirm, never a silent GOAL edit.
+
+     A bare overlay (e.g. just "ultracode" or "brainstorm-first") auto-resolves
+     the base via the same test, then attaches the overlay.
+
+     EXAMPLES: engineering | generative | mixed | auto | ultracode |
+       brainstorm-first | engineering+ultracode | generative+ultracode |
+       mixed+ultracode | engineering+brainstorm-first | mixed+brainstorm-first |
+       engineering+ultracode+brainstorm-first
+     See references/initial-modes.md for full per-mode protocols. -->
 engineering
 
 ## Success criteria

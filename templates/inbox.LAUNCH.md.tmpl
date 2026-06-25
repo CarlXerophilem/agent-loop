@@ -18,6 +18,14 @@ First launch.
      reading here so the next session starts honest. -->
 - `/usage` at last close: <e.g. "18% of weekly used at close"> · or "none — first launch"
 
+## Long-session acknowledgment  (only needed for the `ultracode` overlay -- plan §9 honesty)
+<!-- The ultracode overlay (mode_hint `...+ultracode`) deliberately spends a large wall-clock /
+     parallel budget. It NEVER silently bypasses governance: launch FAILS unless you either raise
+     config/budget.json `session_budget_minutes` OR set the flag below to true. This is the proxy
+     ack only -- the harness still cannot read your real account cap (plan §9). Leave false unless
+     you are intentionally running a long ultracode session. -->
+- acknowledged_long_session: false
+
 ## Scope / focus for this session (optional)
 - in scope: <narrow to part of GOAL.md, or leave blank for all of it>
 - off-limits: <files/areas workers must not touch>

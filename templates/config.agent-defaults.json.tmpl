@@ -1,5 +1,7 @@
 {
   "_comment": "Binds the free variables of AGT(id, todo, read, effort, model, isolation, time, schema) by rubric tier. Mirrors the plan sec 4 table. NOTE: time_target_minutes is a SOFT scoping target, not an enforced kill (a subagent has no hard wall-clock timeout, plan R10) -- size the task small and don't wait past budget. model is Claude-family for native workers; the verifier reaches a non-Claude reviewer via hooks/cross-verify.sh (the cross-model bridge, plan sec 6.2).",
+  "max_parallel_workers": 8,
+  "_max_parallel_workers_comment": "Global cap on concurrent worktree workers / scouts. The ultracode overlay clamps to this: config/mode.json overlays.ultracode.slow_discovery.scout_count_cap_key and multi_thread.fan_out_width_cap_key both name this key. Keep <= the host's safe concurrency (the Workflow tool caps fan-out at min(16, cpu cores - 2)).",
   "T0": {
     "_comment": "baseline -- S>=17 & F>=2; always in scope, do first.",
     "effort": "high",

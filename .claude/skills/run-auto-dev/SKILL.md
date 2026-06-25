@@ -48,12 +48,12 @@ On Windows, equivalently:
 "C:/Program Files/Git/bin/bash.exe" .claude/skills/run-auto-dev/smoke.sh
 ```
 
-It runs 20 assertions and exits 0 iff all pass. The 3 live-arXiv and 1 live-cross-model checks
-**SKIP** (not fail) when offline / keyless: a clean, offline, keyless box reports `pass=16
-skip=4`; this box (online, key present) reports `pass=20 skip=0`. Last line looks like:
+It runs 27 assertions and exits 0 iff all pass. The 3 live-arXiv and 1 live-cross-model checks
+**SKIP** (not fail) when offline / keyless: a clean, offline, keyless box reports `pass=23
+skip=4`; this box (online, key present) reports `pass=27 skip=0`. Last line looks like:
 
 ```
-== RESULT: pass=20 fail=0 skip=0 ==
+== RESULT: pass=27 fail=0 skip=0 ==
 ```
 
 ### Driving the hooks directly (what the driver runs)

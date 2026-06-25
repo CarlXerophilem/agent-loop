@@ -14,24 +14,29 @@ runs (unlike the local-only `loop-state.local.json`).
 - [ ] Implement the SCAFFOLD stubs in `tools/preference-advisor/` (advisor.ts brainstorm +
       final-review LLM-judge; ingest.ts `gh` PR-outcome fetch + Reflexion rewrite of
       `state/preferences.md`) using the mature designs cited in its README.
-- [ ] Add the Claude **Agent SDK** as a 4th local loop driver in `references/loop-setup.md`
-      (note: SDK auth is `ANTHROPIC_API_KEY` only -- no subscription OAuth).
-- [ ] Add a smoke assertion that `budget-gate.sh` emits **valid JSON** at ok/warn/stop
-      (pipe each through a JSON parser; today only the `[budget-gate:...]` substring is checked).
-- [ ] Add a smoke assertion that every `hooks/*.sh` passes `bash -n` (syntax) and starts
-      with a `#!` shebang line.
-- [ ] Add a smoke assertion that `references/*.md` internal links (`` `file.md` `` / relative
-      paths) resolve to files that exist in the repo (catch dangling references early).
 - [ ] Make `references/loop-setup.md` state the cp936/GBK **ASCII rule for state/config**
       explicitly (the smoke suite now enforces ASCII templates; the rationale should be
       one click away from the loop docs).
 - [ ] Add `bash -n` lint of `.claude/skills/run-auto-dev/smoke.sh` itself to a meta-check.
+- [ ] Add a smoke assertion that `tools/setup-workspace.sh` instantiates CANONICAL paths
+      (`config/rubric.json`, not `config/config.rubric.json`) into a temp dir and that every
+      written `config/*.json` is ASCII + valid JSON; assert idempotent re-run skips all.
 
 ## Done (most recent first)
 
+- [x] Add `tools/setup-workspace.sh`: instantiate the launch inputs from `templates/` with the
+      correct `.`->`/` map (`config.rubric.json.tmpl` -> `config/rubric.json`), ASCII+JSON-gate
+      every config, idempotent + `--force`; wired into `agents/host_coordinator.md` (phase 0).
+      Fixes the manual-strip-only-`.tmpl` footgun (config-key drift). smoke 20/20.
 - [x] Unify the Python-interpreter idiom across `hooks/cross-verify.sh` + `hooks/alphaxiv.sh`:
       both now resolve once into `PY` then GUARD each use with `[ -n "${PY}" ]` (dropping the
       misleading `${PY:-python3}` re-try); convention noted in both headers. smoke 20/20.
+- [x] Document engines C (GitHub Actions cloud) + D (Claude Agent SDK, local programmatic) in
+      `references/loop-setup.md`, bringing it in sync with the shipped `.github/` loop.
+- [x] Doc link integrity: smoke section 6 asserts every references/agents/hooks/templates/examples
+      path in SKILL.md + references/*.md resolves in-repo (catches dangling refs). Smoke 26 -> 27.
+- [x] Harden hook smoke coverage: assert `budget-gate.sh` emits valid JSON at ok/warn/stop, and
+      every `hooks/*.sh` has a `#!` shebang + passes `bash -n`. Smoke 20 -> 26.
 - [x] Preference-advisor: verified online Bradley-Terry core (`tools/preference-advisor/bt.ts`)
       + passing tests; design + safety rails in `references/preference-advisor.md`.
 - [x] ASCII-fold all JSON templates; coerce non-numeric `max` in `alphaxiv.sh`; smoke 13 -> 20.

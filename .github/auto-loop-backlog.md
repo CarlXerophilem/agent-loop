@@ -29,9 +29,16 @@ runs (unlike the local-only `loop-state.local.json`).
       explicitly (the smoke suite now enforces ASCII templates; the rationale should be
       one click away from the loop docs).
 - [ ] Add `bash -n` lint of `.claude/skills/run-auto-dev/smoke.sh` itself to a meta-check.
+- [ ] Add a smoke assertion that `tools/setup-workspace.sh` instantiates CANONICAL paths
+      (`config/rubric.json`, not `config/config.rubric.json`) into a temp dir and that every
+      written `config/*.json` is ASCII + valid JSON; assert idempotent re-run skips all.
 
 ## Done (most recent first)
 
+- [x] Add `tools/setup-workspace.sh`: instantiate the launch inputs from `templates/` with the
+      correct `.`->`/` map (`config.rubric.json.tmpl` -> `config/rubric.json`), ASCII+JSON-gate
+      every config, idempotent + `--force`; wired into `agents/host_coordinator.md` (phase 0).
+      Fixes the manual-strip-only-`.tmpl` footgun (config-key drift). smoke 20/20.
 - [x] Preference-advisor: verified online Bradley-Terry core (`tools/preference-advisor/bt.ts`)
       + passing tests; design + safety rails in `references/preference-advisor.md`.
 - [x] ASCII-fold all JSON templates; coerce non-numeric `max` in `alphaxiv.sh`; smoke 13 -> 20.

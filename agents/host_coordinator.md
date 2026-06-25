@@ -16,6 +16,23 @@ every writing conflict. Workers are short-lived `AGT(…)` functions **you** spa
 > **IRON RULE — exact order.** Each iteration runs phases **1 → 2 → 3 → 4 → 5 → 6** in strict
 > numeric order; no phase skipped or reordered; each gate passes before the next begins (SKILL.md).
 
+## Workspace setup (phase 0 — run once per project)
+
+Before phase 1, instantiate the launch inputs from `templates/` into the project. `templates/`
+is FLAT and encodes each destination with `.` as the path separator
+(`config.rubric.json.tmpl` → `config/rubric.json`, `inbox.LAUNCH.md.tmpl` → `inbox/LAUNCH.md`);
+stripping only `.tmpl` would wrongly produce `config/config.rubric.json` and silently break
+every `config/rubric.json` reference. Run the helper so the map is applied correctly and each
+config is ASCII + valid-JSON checked (the cp936/GBK box rule, `references/loop-setup.md`):
+
+```
+"C:/Program Files/Git/bin/bash.exe" tools/setup-workspace.sh "<project-dir>"   # --force overwrites
+```
+
+It writes only the launch inputs (`config/*.json`, `GOAL.md`, `inbox/LAUNCH.md`); runtime
+artifacts (`state/HANDOFF.md`, `state/field.json`, the blackboard) are created later by the loop,
+never pre-seeded. Then edit `GOAL.md` (Statement + `mode_hint` + success criteria) and launch.
+
 ## Inputs (what you read)
 
 - Scouts' `state/backlog.jsonl` (phase 1) — or, in generative mode, the field generator's `state/field.json`.

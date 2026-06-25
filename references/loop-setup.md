@@ -2,7 +2,7 @@
 
 > **Status:** scaffold · Mirrors **plan §10 + R4**. Neither engine is defaulted — **operator choice**. A skill cannot loop itself; the loop lives here.
 
-## The two engines
+## The two on-machine engines (A, B)
 
 | | **A. Native `/loop` dynamic** | **B. ralph-loop `Stop` hook** |
 |---|---|---|
@@ -16,7 +16,32 @@
 
 ---
 
-## Completion criteria (either engine)
+## Two more engines (added as the harness matured)
+
+Engines A and B keep the loop on a human's machine. Two more remove that constraint:
+
+- **C. GitHub Actions (cloud, laptop-independent).** A scheduled workflow runs the loop on
+  GitHub's runners, so no machine stays open. Shipped in this repo: `.github/workflows/auto-loop.yml`
+  (daily; scheduled runs gated by repo variable `LOOP_ENABLED`) makes one smoke-gated edit and
+  opens a PR for review — it never merges itself; `.github/workflows/loop-canary.yml` is a $0
+  plumbing check. Auth: `CLAUDE_CODE_OAUTH_TOKEN` (subscription) or `ANTHROPIC_API_KEY`. Full
+  setup, ramp, and on/off switch: `.github/README-auto-loop.md`. Cons: 6-hour per-job cap;
+  scheduled workflows auto-disable after 60 days of repo inactivity.
+- **D. Claude Agent SDK (local programmatic).** `@anthropic-ai/claude-agent-sdk` (TypeScript)
+  runs full agentic sessions via `query()`. Pass `settingSources: ["user","project"]` +
+  `skills: "all"` so it loads `CLAUDE.md` and `.claude/skills/` (it can invoke `/auto-dev`
+  itself). You write the loop yourself (a `while` / `node-cron` driver under systemd / pm2);
+  for unattended runs set `permissionMode: "dontAsk"` + an explicit `allowedTools`. Auth:
+  **`ANTHROPIC_API_KEY` only — it does NOT accept the subscription OAuth token.** Still needs an
+  always-on host (not laptop-independent by itself). Used by the preference-advisor scaffold
+  (`references/preference-advisor.md`).
+
+> Same phases (1–6), same completion criteria, same governance under any engine — only the
+> wake/dispatch mechanism differs.
+
+---
+
+## Completion criteria (any engine)
 
 Stop when **any** holds:
 

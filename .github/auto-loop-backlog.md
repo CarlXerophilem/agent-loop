@@ -22,9 +22,6 @@ runs (unlike the local-only `loop-state.local.json`).
       with a `#!` shebang line.
 - [ ] Add a smoke assertion that `references/*.md` internal links (`` `file.md` `` / relative
       paths) resolve to files that exist in the repo (catch dangling references early).
-- [ ] Unify the Python-interpreter resolution style across `hooks/alphaxiv.sh` and
-      `hooks/cross-verify.sh` (both work; one guards with `[ -n "$PY" ]`, the other uses
-      `${PY:-python3}`) -- pick one idiom and note it.
 - [ ] Make `references/loop-setup.md` state the cp936/GBK **ASCII rule for state/config**
       explicitly (the smoke suite now enforces ASCII templates; the rationale should be
       one click away from the loop docs).
@@ -32,6 +29,9 @@ runs (unlike the local-only `loop-state.local.json`).
 
 ## Done (most recent first)
 
+- [x] Unify the Python-interpreter idiom across `hooks/cross-verify.sh` + `hooks/alphaxiv.sh`:
+      both now resolve once into `PY` then GUARD each use with `[ -n "${PY}" ]` (dropping the
+      misleading `${PY:-python3}` re-try); convention noted in both headers. smoke 20/20.
 - [x] Preference-advisor: verified online Bradley-Terry core (`tools/preference-advisor/bt.ts`)
       + passing tests; design + safety rails in `references/preference-advisor.md`.
 - [x] ASCII-fold all JSON templates; coerce non-numeric `max` in `alphaxiv.sh`; smoke 13 -> 20.
